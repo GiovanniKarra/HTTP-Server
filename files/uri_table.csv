@@ -1,3 +1,4 @@
 uri,file,status_code
 /,index.html,200
-/style.css,style.css,200
+/index_style.css,styles/index_style.css,200
+/errorstyle.css,styles/errorstyle.css,200

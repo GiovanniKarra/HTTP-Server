@@ -61,7 +61,7 @@ int uri_to_file(const char *uri, char *file) {
 	}
 	if (code == NOT_FOUND) {
 		struct stat file_stat;
-		
+
 		char filename[MAX_FILE_PATH_SIZE];
 		strcpy(filename, FILES_ROOT_LOCATION);
 		strcat(filename, uri);
@@ -74,6 +74,34 @@ int uri_to_file(const char *uri, char *file) {
 	}
 
 	return code;
+}
+
+
+char *FILE_EXTENSIONS[] = {
+	"html",
+	"css",
+	"js",
+	"png",
+	"jpg"
+};
+char *FILE_TYPE[] = {
+	"text/html",
+	"text/css",
+	"text/javascript",
+	"image/png",
+	"image/jpg"
+};
+
+char *get_content_type(char *filename) {
+	char *file = filename+2;
+	strsep(&file, ".");
+	char *extension = strsep(&file, ".");
+	for (int i = 0; i < sizeof(FILE_EXTENSIONS)/sizeof(char*); i++) {
+		if (strcmp(FILE_EXTENSIONS[i], extension) == 0) {
+			return FILE_TYPE[i];
+		}
+	}
+	return "text/plain";
 }
 
 char *status_code_to_message(int code) {

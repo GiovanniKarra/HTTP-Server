@@ -22,11 +22,7 @@ void process_request(http_request *request, http_response *response) {
 
 	response->body[file_size] = '\0';
 
-	char *type = strchr(file+2, '.');
-	if (type == NULL || type == file) type = "plain";
-
-	response->content_type = (char*)malloc(sizeof(char)*32);
-	sprintf(response->content_type, "text/%s", type+1);
+	response->content_type = get_content_type(file);
 	response->content_size = strlen(response->body);
 
 	close(fd);
@@ -85,5 +81,5 @@ void send_response(int socket, http_response *response) {
 	if (err == -1) { perror("socket send"); exit(EXIT_FAILURE); }
 
 	free(response->body);
-	free(response->content_type);
+	// free(response->content_type);
 }

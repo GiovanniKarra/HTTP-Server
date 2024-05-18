@@ -50,5 +50,6 @@ void send_response(int socket, http_response *response);
 
 int uri_to_file(const char *uri, char *file);
 char *status_code_to_message(int code);
+char *get_content_type(char *filename);
 
 #endif

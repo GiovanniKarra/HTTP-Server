@@ -21,6 +21,7 @@
 #define URI_TABLE_FILE "../files/uri_table.csv"
 
 #define OK 200
+#define FORBIDDEN 403
 #define NOT_FOUND 404
 
 

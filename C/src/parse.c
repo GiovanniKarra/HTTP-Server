@@ -21,8 +21,6 @@ void parse_request(int socketfd, http_request *request) {
 	int err = read(socketfd, buffer, MAX_REQUEST_SIZE);
 	if (err == -1) { perror("socket read"); exit(EXIT_FAILURE); }
 
-	printf("%s\n", buffer);
-
 	char *token;
 	char *str = (char*)buffer;
 	while ((token = strsep(&str, "\r\n"))) {
@@ -39,7 +37,7 @@ int uri_to_file(const char *uri, char *file) {
 	int err = read(fd, table, MAX_FILE_SIZE);
 	if (err == -1) { perror("read file"); exit(EXIT_FAILURE); }
 
-	int code = 404;
+	int code = NOT_FOUND;
 	strcpy(file, ERROR_FILES_LOCATION "/Error404.html");
 
 	int first_entry_offset = 0;
@@ -50,7 +48,6 @@ int uri_to_file(const char *uri, char *file) {
 	char *table_ptr = ((char*)table)+first_entry_offset+1;
 	char *line;
 	while ((line = strsep(&table_ptr, "\n"))) {
-		printf("uri: %s\n", uri);
 		char *token = strsep(&line, ",");
 		if (strcmp(token, uri)) continue;
 
@@ -62,8 +59,19 @@ int uri_to_file(const char *uri, char *file) {
 
 		break;
 	}
+	if (code == NOT_FOUND) {
+		struct stat file_stat;
+		
+		char filename[MAX_FILE_PATH_SIZE];
+		strcpy(filename, FILES_ROOT_LOCATION);
+		strcat(filename, uri);
 
-	printf("file fetched: %s\n", file);
+		int err = stat(filename, &file_stat);
+		if (err == 0) {
+			strcpy(file, filename);
+			code = OK;
+		}
+	}
 
 	return code;
 }
@@ -71,14 +79,17 @@ int uri_to_file(const char *uri, char *file) {
 char *status_code_to_message(int code) {
 	switch (code)
 	{
-	case 404:
+	case NOT_FOUND:
 		return "Not Found";
 		break;
-	case 200:
+	case FORBIDDEN:
+		return "Forbidden";
+		break;
+	case OK:
 		return "OK";
 		break;
 	default:
-		return "Unknown error";
+		return "Unknown code";
 		break;
 	}
 }

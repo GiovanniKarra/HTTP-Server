@@ -4,38 +4,12 @@
 void process_request(http_request *request, http_response *response) {
 	response->protocol = "HTTP/1.1";
 	response->connection = "close";
-	
-	// struct stat file_stat;
-	// int err = stat(request->uri, &file_stat);
-	// if (err == -1) file_stat.st_mode = 0;  // { perror("stat error"); exit(1); }
 
 	char *file = (char*)malloc(sizeof(char)*MAX_FILE_PATH_SIZE);
 	response->status_code = uri_to_file(request->uri, file);
 	response->status_message = status_code_to_message(response->status_code);
 
 	int fd = open(file, O_RDONLY);
-	// int fd;
-	// mode_t mode = file_stat.st_mode & __S_IFMT;
-	// if (mode == __S_IFLNK || mode == __S_IFREG) {
-	// 	response->status_code = 200;
-	// 	response->status_message = "OK";
-
-	// 	fd = open(request->uri, O_RDONLY);
-	// 	if (fd < 0) { perror("File error"); exit(1); }
-
-	// 	file = request->uri;
-	// }
-	// else {
-	// 	response->status_code = 404;
-	// 	response->status_message = "Not Found";
-
-	// 	char error_file[32];
-	// 	sprintf(error_file, "%s/Error%d.html", ERROR_FILES_LOCATION, response->status_code);
-	// 	fd = open(error_file, O_RDONLY);
-	// 	if (fd < 0) { perror("Unknown file"); exit(1); }
-
-	// 	file = error_file;
-	// }
 
 	size_t file_size = lseek(fd, 0, SEEK_END);
 	if (file_size == -1) { perror("file seek"); exit(EXIT_FAILURE); }

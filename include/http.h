@@ -16,9 +16,9 @@
 #define MAX_FILE_PATH_SIZE 256
 #define MAX_FILE_SIZE 65536
 
-#define FILES_ROOT_LOCATION "../files" 
-#define ERROR_FILES_LOCATION "../files/errors"
-#define URI_TABLE_FILE "../files/uri_table.csv"
+#define FILES_ROOT_LOCATION "./files" 
+#define ERROR_FILES_LOCATION "./files/errors"
+#define URI_TABLE_FILE "./files/uri_table.csv"
 
 #define OK 200
 #define FORBIDDEN 403

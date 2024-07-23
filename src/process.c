@@ -20,10 +20,10 @@ void process_request(http_request *request, http_response *response) {
 	int err = read(fd, response->body, file_size);
 	if (err == -1) { perror("file read"); exit(EXIT_FAILURE); }
 
-	response->body[file_size] = '\0';
+	// response->body[file_size] = '\0';
 
 	response->content_type = get_content_type(file);
-	response->content_size = strlen(response->body);
+	response->content_size = file_size;
 
 	close(fd);
 	free(file);
@@ -32,10 +32,11 @@ void process_request(http_request *request, http_response *response) {
 
 void send_response(int socket, http_response *response) {
 	int size_buffer_value = 128;
-	int buff_size = strlen(response->body)+strlen(response->protocol)+size_buffer_value+
+	int buff_size = response->content_size+strlen(response->protocol)+size_buffer_value+
 					strlen(response->status_message)+strlen(response->content_type);
 
-	char buffer[buff_size];
+	// use malloc because a big file (ie image) can surpass the stack's maximum size
+	char *buffer = (char*)malloc(buff_size*sizeof(char));
 	buffer[0] = '\0';
 	
 	strcat(buffer, response->protocol);
@@ -68,18 +69,21 @@ void send_response(int socket, http_response *response) {
 	}
 	strcat(buffer, "\r\n");  // mandatory 'empty line'
 
-	if (strlen(response->body) > 0) {
-		strcat(buffer, response->body);
-		strcat(buffer, "\r\n\r\n");
+	// printf("size: %ld\n", response->content_size);
+	if (response->content_size > 0) {
+		int index = strlen(buffer);
+		memcpy(buffer+index, response->body, response->content_size);
+		memcpy(buffer+index+response->content_size, "\r\n\r\n", 5);
 	}
 
-	size_t response_size = strlen(buffer);
+	// size_t response_size = strlen(buffer);
 
 	// printf("%s\n", buffer);
 	
-	int err = send(socket, buffer, response_size, 0);
+	int err = send(socket, buffer, buff_size, 0);
 	if (err == -1) { perror("socket send"); exit(EXIT_FAILURE); }
 
 	free(response->body);
+	free(buffer);
 	// free(response->content_type);
 }

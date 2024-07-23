@@ -52,11 +52,13 @@ int main(int argc, char const *argv[])
 		http_response response;
 
 		parse_request(new_socket, &request);
-		printf("--- REQUEST PARSED ---\n");
+		printf("\n--- REQUEST PARSED ---\n");
+		printf("RECEIVED REQUEST FOR %s\n", request.uri);
 		process_request(&request, &response);
-		printf("--- REQUEST PROCESSED ---\n");
+		printf("\n--- REQUEST PROCESSED ---\n");
+		printf("CODE %d\n", response.status_code);
 		send_response(new_socket, &response);
-		printf("--- RESPONSE SENT ---\n\n");
+		printf("\n--- RESPONSE SENT ---\n\n");
 	}
 
 	// closing the connected socket

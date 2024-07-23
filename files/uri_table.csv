@@ -1,3 +1,4 @@
 uri,file,status_code
 /,index.html,200
 errors/Error404.html,,403
+/fuckyou,jsmagic.html,200
